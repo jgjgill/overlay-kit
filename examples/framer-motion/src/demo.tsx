@@ -1,12 +1,25 @@
-import { overlay } from 'overlay-kit';
+import { overlay, useCurrentOverlay } from 'overlay-kit';
 import { useState } from 'react';
-import { Modal } from './components/modal';
+import { CenterModal, Modal } from './components/modal';
 
 export function Demo() {
+  const current = useCurrentOverlay();
   return (
     <div>
-      <DemoWithState />
+      <div>current: {current ?? 'null'}</div>
+      {/* <DemoWithState /> */}
       <DemoWithEsOverlay />
+      <button
+        onClick={() => {
+          if (!current) {
+            return;
+          }
+
+          overlay.close(current);
+        }}
+      >
+        Current Close Button
+      </button>
     </div>
   );
 }
@@ -30,25 +43,30 @@ function DemoWithState() {
 
 function DemoWithEsOverlay() {
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
       <p>Demo with overlay-kit</p>
       <button
         onClick={() => {
           overlay.open(({ isOpen, close, unmount }) => {
             return (
-              <Modal isOpen={isOpen} onExit={unmount}>
+              <CenterModal isOpen={isOpen} onExit={unmount}>
                 <div
-                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
                 >
                   <p>MODAL CONTENT</p>
                   <button onClick={close}>close modal</button>
                 </div>
-              </Modal>
+              </CenterModal>
             );
           });
         }}
       >
-        open modal
+        open center modal
       </button>
     </div>
   );

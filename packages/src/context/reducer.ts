@@ -33,8 +33,12 @@ export function overlayReducer(state: OverlayData, action: OverlayReducerAction)
       };
     }
     case 'CLOSE': {
+      const closedCurrentIndex = state.overlayOrderList.findIndex((item) => item === action.overlayId);
+      const currentIndex = closedCurrentIndex - 1;
+
       return {
         ...state,
+        current: state.overlayOrderList[currentIndex] ?? null,
         overlayData: {
           ...state.overlayData,
           [action.overlayId]: {
@@ -53,8 +57,15 @@ export function overlayReducer(state: OverlayData, action: OverlayReducerAction)
       const copiedOverlayData = { ...state.overlayData };
       delete copiedOverlayData[action.overlayId];
 
+      const updatedCurrent = state.current
+        ? remainingOverlays.includes(state.current)
+          ? state.current // close 이후 unmount가 실행된 경우
+          : remainingOverlays.at(-1) ?? null // unmount만 실행해서 remainingOverlays에 current가 없는 경우
+        : null; // current가 null인 경우
+
       return {
-        current: remainingOverlays.at(-1) ?? null,
+        // current: remainingOverlays.at(-1) ?? null, // original code
+        current: updatedCurrent,
         overlayOrderList: remainingOverlays,
         overlayData: copiedOverlayData,
       };

@@ -4,21 +4,39 @@ import { useRef, type PropsWithChildren } from 'react';
 type ModalProps = {
   isOpen?: boolean;
   onExit?: () => void;
+  translateX?: string;
+  translateY?: string;
 };
 
-export function Modal({ children, isOpen = false, onExit }: PropsWithChildren<ModalProps>) {
+export function CenterModal(props: PropsWithChildren<ModalProps>) {
+  return <Modal {...props} translateX="-50%" translateY="-50%" />;
+}
+export function TopModal(props: PropsWithChildren<ModalProps>) {
+  return <Modal {...props} translateX="-50%" translateY="-125%" />;
+}
+export function BottomModal(props: PropsWithChildren<ModalProps>) {
+  return <Modal {...props} translateX="-50%" translateY="25%" />;
+}
+
+export function Modal({ children, isOpen = false, onExit, translateX, translateY }: PropsWithChildren<ModalProps>) {
   const prevIsOpenRef = useRef(isOpen);
 
   if (isOpen !== prevIsOpenRef.current) {
     prevIsOpenRef.current = isOpen;
 
     if (prevIsOpenRef.current === false) {
-      setTimeout(() => onExit?.(), 300);
+      setTimeout(() => onExit?.(), 2000);
     }
   }
 
   return (
-    <AnimatePresence>{isOpen === true && <ModalContent isOpen={isOpen}>{children}</ModalContent>}</AnimatePresence>
+    <AnimatePresence>
+      {isOpen === true && (
+        <ModalContent isOpen={isOpen} translateX={translateX} translateY={translateY}>
+          {children}
+        </ModalContent>
+      )}
+    </AnimatePresence>
   );
 }
 
@@ -27,16 +45,15 @@ const MODAL_CONTENT_VARIANTS: Variants = {
   show: { opacity: 1, scale: 1 },
 };
 
-function ModalContent({ children, isOpen }: PropsWithChildren<ModalProps>) {
+function ModalContent({ children, isOpen, translateX, translateY }: PropsWithChildren<ModalProps>) {
   return (
     <div
       style={{
         zIndex: 100,
         position: 'fixed',
-        top: 0,
-        left: 0,
-        bottom: 0,
-        width: '100%',
+        top: '50%',
+        left: '50%',
+        transform: `translate(${translateX}, ${translateY})`,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -47,6 +64,7 @@ function ModalContent({ children, isOpen }: PropsWithChildren<ModalProps>) {
         initial="hidden"
         exit="hidden"
         animate={isOpen ? 'show' : 'hidden'}
+        transition={{ duration: 2 }}
         style={{
           padding: 120,
           borderWidth: 1,
