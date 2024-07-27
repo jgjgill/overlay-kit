@@ -1,5 +1,16 @@
 # overlay-kit
 
+## 1.3.1
+
+### Patch Changes
+
+- [#64](https://github.com/toss/overlay-kit/pull/64) [`01eaa3c`](https://github.com/toss/overlay-kit/commit/01eaa3c41e367224852cad56bc0214f1bf05ff77) Thanks [@jungpaeng](https://github.com/jungpaeng)! - feat: Add cleanup effect for unmounting
+
+  This commit introduces a useEffect cleanup function in the OverlayProvider component that dispatches a 'REMOVE_ALL' action when the component unmounts.
+  This change ensures that all overlays are properly cleaned up during testing scenarios, preventing state leakage and side effects from persistent overlays.
+
+  **Related Issue:** Fixes #63
+
 ## 1.3.0
 
 ### Minor Changes
