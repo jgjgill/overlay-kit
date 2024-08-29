@@ -13,6 +13,28 @@ export function OverlayProvider({ children }: PropsWithChildren) {
     };
   }, []);
 
+  useEffect(() => {
+    const overlayList = overlayState.overlayOrderList.map((item) => {
+      const { id, isOpen } = overlayState.overlayData[item];
+      return { id, isOpen };
+    });
+
+    const event = new CustomEvent('sendToExtension', { detail: { overlayList, currentId: overlayState.current } });
+    window.dispatchEvent(event);
+  }, [overlayState]);
+
+  useEffect(() => {
+    const handleCustomEvent = (event: CustomEvent) => {
+      dispatchOverlay({ type: 'REMOVE', overlayId: event.detail });
+    };
+
+    window.addEventListener('sendToApp', handleCustomEvent as EventListener);
+
+    return () => {
+      window.removeEventListener('sendToApp', handleCustomEvent as EventListener);
+    };
+  }, []);
+
   return (
     <OverlayContextProvider value={overlayState}>
       {children}
