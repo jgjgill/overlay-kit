@@ -1,55 +1,42 @@
-import { overlay } from 'overlay-kit';
-import { useState } from 'react';
-import { Modal } from './components/modal.tsx';
+import { Button } from '@mui/material';
+import { OverlayProvider, overlay } from 'overlay-kit';
+import { ConfirmDialog } from './components/modal';
 
-export function Demo() {
+function App() {
   return (
-    <div>
-      <DemoWithState />
-      <DemoWithEsOverlay />
-    </div>
-  );
-}
-
-function DemoWithState() {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <div>
-      <p>Demo with useState</p>
-      <button onClick={() => setIsOpen(true)}>open modal</button>
-      <Modal isOpen={isOpen}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-          <p>MODAL CONTENT</p>
-          <button onClick={() => setIsOpen(false)}>close modal</button>
-        </div>
-      </Modal>
-    </div>
-  );
-}
-
-function DemoWithEsOverlay() {
-  return (
-    <div>
-      <p>Demo with overlay-kit</p>
-      <button
+    <>
+      <Button
         onClick={() => {
-          overlay.open(({ isOpen, close, unmount }) => {
-            return (
-              <Modal isOpen={isOpen} onExit={unmount}>
-                <div
-                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}
-                >
-                  <p>MODAL CONTENT</p>
-                  <button onClick={close}>close modal</button>
-                </div>
-              </Modal>
-            );
-          });
+          overlay.open(
+            ({ isOpen, close }) => {
+              return <ConfirmDialog isOpen={isOpen} close={close} />;
+            },
+            { overlayId: 'close-overlay' }
+          );
         }}
       >
-        open modal
-      </button>
-    </div>
+        close로 오버레이 닫기
+      </Button>
+      <Button
+        onClick={() => {
+          overlay.open(
+            ({ isOpen, unmount }) => {
+              return <ConfirmDialog isOpen={isOpen} close={unmount} />;
+            },
+            { overlayId: 'unmount-overlay' }
+          );
+        }}
+      >
+        unmount로 오버레이 닫기
+      </Button>
+    </>
   );
 }
+
+export const Example = () => {
+  return (
+    <OverlayProvider>
+      <App />
+    </OverlayProvider>
+  );
+};
